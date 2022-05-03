@@ -17,14 +17,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"crypto/tls"
 	"net/http"
-	"net/url"
-	"strconv"
-	"time"
 
 	"github.com/NETWAYS/go-check"
 	"github.com/spf13/cobra"
+	"github.com/t3easy/check_traefik/internal"
 )
 
 // healthCmd represents the health command
@@ -35,64 +32,17 @@ var (
 		Short:   "Checking the health of your Traefik instance",
 		Version: version,
 		Run: func(cmd *cobra.Command, args []string) {
-			var hostPort string
-			schema := "http"
-			if ssl {
-				schema = "https"
-				if port == 80 {
-					port = 443
-				}
-			}
-			if (ssl && port == 443) || (!ssl && port == 80) {
-				hostPort = ""
-			} else {
-				hostPort = ":" + strconv.Itoa(port)
-			}
+			req := internal.NewRequest(http.MethodHead, ip, hostname, ssl, port, path, username, password)
 
-			healthUrl := &url.URL{
-				Scheme: schema,
-				Host:   ip.String() + hostPort,
-				Path:   path,
-			}
+			resp := internal.GetResp(req, timeout, insecure)
+			defer resp.Body.Close()
 
-			tr := &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
-			}
-
-			client := &http.Client{
-				Timeout:   time.Duration(timeout) * time.Second,
-				Transport: tr,
-			}
-			req, err := http.NewRequest(http.MethodHead, healthUrl.String(), nil)
-			if err != nil {
-				check.ExitError(err)
-			}
-
-			if hostname != "" {
-				req.Host = hostname
-			}
-
-			if username != "" && password != "" {
-				req.SetBasicAuth(username, password)
-			}
-
-			resp, err := client.Do(req)
-			if resp != nil {
-				resp.Body.Close()
-			}
-			if err != nil {
-				check.ExitError(err)
-			}
-
-			rc := check.Critical
-			if resp.StatusCode == http.StatusOK {
-				rc = check.OK
-			}
+			rc := checkResponse(resp)
 
 			check.Exitf(
 				rc,
 				"%s returned %s",
-				healthUrl.String(),
+				req.URL.String(),
 				resp.Status,
 			)
 		},
@@ -102,4 +52,13 @@ var (
 func init() {
 	rootCmd.AddCommand(healthCmd)
 	healthCmd.PersistentFlags().StringVarP(&path, "url", "u", "/ping", "URL of the Traefik health-check endpoint")
+}
+
+func checkResponse(resp *http.Response) int {
+	rc := check.Critical
+	if resp.StatusCode == http.StatusOK {
+		rc = check.OK
+	}
+
+	return rc
 }
