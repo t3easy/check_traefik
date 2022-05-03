@@ -27,7 +27,7 @@ services:
 check_traefik health -I 192.0.2.101 -H traefik.domain.tld --user="monitoring" --password="password"
 ```
 
-## Comming soon:
+## Coming soon:
 Query the [API](https://doc.traefik.io/traefik/operations/api/#endpoints).
 * Compare the response of `/api/version` against latest GitHub release or a static version.
 * Check the response of `/api/overview` for total, warnings and errors.
