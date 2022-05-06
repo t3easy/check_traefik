@@ -34,3 +34,16 @@ func TestVersionStruct(t *testing.T) {
 		t.Fatalf("Version = %s, want 2.6.3", version.Version)
 	}
 }
+
+func TestNormalizeVersion(t *testing.T) {
+	var (
+		versionWithV    string = "v2.6.4"
+		versionWithoutV string = "2.6.5"
+	)
+	if normalizeVersion(versionWithV) != versionWithV {
+		t.Fatalf("Error normalizing version %s.", versionWithV)
+	}
+	if normalizeVersion(versionWithoutV) != "v"+versionWithoutV {
+		t.Fatalf("Error normalizing version %s.", versionWithoutV)
+	}
+}

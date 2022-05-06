@@ -51,9 +51,23 @@ jobs:
         run: go test -v ./...
       - name: Build binary
         run: go build -ldflags "-s -w" -o build/
-      - name: Run against test stack
+      - name: Run health check against test stack
         if: runner.os == 'Linux'
         run: ./build/check_traefik health -I 127.0.0.1 -H traefik.server.tld --url /monitoring/ping --username monitoring --password password --ssl --insecure
+      - name: Run version check against test stack
+        if: runner.os == 'Linux'
+        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.6
+      - name: Start test stack with Traefik v2.6.3
+        if: runner.os == 'Linux'
+        env:
+          TRAEFIK_VERSION: v2.6.3
+        run: docker-compose -f .github/workflows/compose.yml -p test-stack up -d --scale whoami1=3
+      - name: Run version check against v2.6.3 test stack
+        if: runner.os == 'Linux'
+        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.3
+      - name: Run version check against v2.6.3 test stack
+        if: runner.os == 'Linux'
+        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.4 || [ $? -eq 2 ] || exit 1
       - uses: actions/upload-artifact@v3
         with:
           name: Check Traefik ${{ matrix.os }}

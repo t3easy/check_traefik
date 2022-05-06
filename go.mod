@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/NETWAYS/go-check v0.3.0
 	github.com/spf13/cobra v1.4.0
+	golang.org/x/mod v0.5.1
 )
 
 require (
