@@ -17,6 +17,7 @@ services:
       traefik.enable: "true"
       traefik.http.middlewares.auth-monitoring.basicauth.users: monitoring:$$2y$$05$$ni/fP/apxJZMEtNDxCZE2u2kQZyd6Npqvx9gIvB9E0tqPbEmG/K.i
       traefik.http.middlewares.stripprefix-monitoring.stripprefix.prefixes: /monitoring
+      traefik.http.middlewares.stripprefix-monitoring.stripprefix.forceSlash: "false"
 
       traefik.http.routers.api.entrypoints: https
       traefik.http.routers.api.middlewares: stripprefix-monitoring, auth-monitoring
@@ -29,6 +30,8 @@ services:
       traefik.http.routers.ping.rule: Host(`traefik.server.tld`) && PathPrefix(`/monitoring/ping`)
       traefik.http.routers.ping.service: ping@internal
       traefik.http.routers.ping.tls: "true"
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
 
   whoami1:
     image: traefik/whoami
