@@ -52,6 +52,7 @@ jobs:
       - name: Build binary
         run: go build -ldflags "-s -w" -o build/
       - name: Run against test stack
+        if: runner.os == 'Linux'
         run: ./build/check_traefik health -I 127.0.0.1 -H traefik.server.tld --url /monitoring/ping --username monitoring --password password --ssl --insecure
       - uses: actions/upload-artifact@v3
         with:
