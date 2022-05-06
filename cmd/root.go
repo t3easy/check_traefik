@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"net"
+	"time"
 
 	"github.com/NETWAYS/go-check"
 	"github.com/spf13/cobra"
@@ -32,7 +33,7 @@ var (
 	username string
 	password string
 	ssl      bool
-	timeout  int
+	timeout  time.Duration
 	insecure bool
 	rootCmd  = &cobra.Command{
 		Use:     "check_traefik",
@@ -62,6 +63,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&username, "username", "", "User to access the Traefik health-check endpoint")
 	rootCmd.PersistentFlags().StringVar(&password, "password", "", "Password to access the Traefik health-check endpoint")
 	rootCmd.PersistentFlags().BoolVarP(&ssl, "ssl", "S", false, "Connect via SSL. Port defaults to 443.")
-	rootCmd.PersistentFlags().IntVarP(&timeout, "timeout", "T", 2, "Timeout in secounds")
+	rootCmd.PersistentFlags().DurationVarP(&timeout, "timeout", "T", 2, "Timeout in secounds")
 	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "If true accepts any certificate presented by the server and any host name in that certificate")
 }

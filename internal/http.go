@@ -59,7 +59,7 @@ func NewRequest(method string, ip net.IP, hostname string, ssl bool, port int, p
 	return req
 }
 
-func GetResp(req *http.Request, timeout int, insecure bool) *http.Response {
+func GetResp(req *http.Request, timeout time.Duration, insecure bool) *http.Response {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: insecure,
@@ -68,7 +68,7 @@ func GetResp(req *http.Request, timeout int, insecure bool) *http.Response {
 	}
 
 	client := &http.Client{
-		Timeout:   time.Duration(timeout) * time.Second,
+		Timeout:   timeout * time.Second,
 		Transport: tr,
 	}
 
