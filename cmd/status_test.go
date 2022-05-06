@@ -27,7 +27,7 @@ const (
 )
 
 func TestOverviewStruct(t *testing.T) {
-	var overview Overview
+	var overview TraefikOverview
 	if err := json.Unmarshal([]byte(apiOverviewReturn), &overview); err != nil {
 		t.Fatalf("Unmarshal: %v", err)
 	}

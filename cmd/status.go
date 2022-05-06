@@ -16,24 +16,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package cmd
 
-type States struct {
+type TraefikProtocolStates struct {
 	Total    int `json:"total"`
 	Warnings int `json:"warnings"`
 	Errors   int `json:"errors"`
 }
 
-type Service struct {
-	Routers     States `json:"routers"`
-	Services    States `json:"services"`
-	Middlewares States `json:"middlewares"`
+type TraefikProtocol struct {
+	Routers     TraefikProtocolStates `json:"routers"`
+	Services    TraefikProtocolStates `json:"services"`
+	Middlewares TraefikProtocolStates `json:"middlewares"`
 }
 
-type Overview struct {
-	Http Service `json:"http"`
-	Tcp  Service `json:"tcp"`
-	UDP  struct {
-		Routers  States `json:"routers"`
-		Services States `json:"services"`
+type TraefikOverview struct {
+	Http TraefikProtocol `json:"http"`
+	Tcp  TraefikProtocol `json:"tcp"`
+	Udp  struct {
+		Routers  TraefikProtocolStates `json:"routers"`
+		Services TraefikProtocolStates `json:"services"`
 	} `json:"udp"`
 	Features struct {
 		Tracing   string `json:"tracing"`
