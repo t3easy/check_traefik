@@ -1,0 +1,49 @@
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+    - "127.0.0.1:80:80"
+    - "127.0.0.1:443:443"
+    command:
+    - --api=true
+    - --entrypoints.http.address=:80
+    - --entrypoints.https.address=:443
+    - --pilot.dashboard=false
+    - --ping=true
+    - --ping.manualrouting=true
+    - --providers.docker=true
+    - --providers.docker.exposedByDefault=false
+    labels:
+      traefik.enable: "true"
+      traefik.http.middlewares.auth-monitoring.basicauth.users: monitoring:$$2y$$05$$ni/fP/apxJZMEtNDxCZE2u2kQZyd6Npqvx9gIvB9E0tqPbEmG/K.i
+      traefik.http.middlewares.stripprefix-monitoring.stripprefix.prefixes: /monitoring
+
+      traefik.http.routers.api.entrypoints: https
+      traefik.http.routers.api.middlewares: stripprefix-monitoring, auth-monitoring
+      traefik.http.routers.api.rule: Host(`traefik.server.tld`) && (PathPrefix(`/monitoring/api/version`) || PathPrefix(`/monitoring/api/overview`))
+      traefik.http.routers.api.service: api@internal
+      traefik.http.routers.api.tls: "true"
+
+      traefik.http.routers.ping.entrypoints: https
+      traefik.http.routers.ping.middlewares:  stripprefix-monitoring, auth-monitoring
+      traefik.http.routers.ping.rule: Host(`traefik.server.tld`) && PathPrefix(`/monitoring/ping`)
+      traefik.http.routers.ping.service: ping@internal
+      traefik.http.routers.ping.tls: "true"
+
+  whoami1-1:
+    image: traefik/whoami
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.whoami1.rule: Host(`whoami1.server.tld`)
+
+  whoami1-2:
+    image: traefik/whoami
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.whoami1.rule: Host(`whoami1.server.tld`)
+
+  whoami2:
+    image: traefik/whoami
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.whoami2.rule: Host(`whoami2.server.tld`)

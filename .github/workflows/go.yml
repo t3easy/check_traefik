@@ -13,6 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
+      - name: Start test stack
+        run: docker-compose up -d -f .github/workflows/compose.yml -p test-stack
       - uses: actions/cache@v3
         if: runner.os == 'Linux'
         with:
@@ -48,7 +50,12 @@ jobs:
         run: go test -v ./...
       - name: Build binary
         run: go build -ldflags "-s -w" -o build/
+      - name: Run against test stack
+        run: ./build/check_traefik health -I 127.0.0.1 -H traefik.server.tld --url /monitoring/ping --username monitoring --password password --ssl --insecure
       - uses: actions/upload-artifact@v3
         with:
           name: Check Traefik ${{ matrix.os }}
           path: build/
+      - name: Stop test stack
+        if: always()
+        run: docker-compose down -f .github/workflows/compose.yml -p test-stack
