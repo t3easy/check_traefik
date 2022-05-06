@@ -31,7 +31,7 @@ var (
 		Use:     "health",
 		Short:   "Checking the health of your Traefik instance",
 		Version: version,
-		Example: `check_traefik health -I 192.0.2.101 -H traefik.domain.tld --user="monitoring" --password="password"`,
+		Example: `check_traefik health -I 192.0.2.101 -H traefik.domain.tld --username monitoring --password password`,
 		Run: func(cmd *cobra.Command, args []string) {
 			req := internal.NewRequest(http.MethodHead, ip, hostname, ssl, port, path, username, password)
 
