@@ -27,7 +27,7 @@ func TestCheckResponseOK(t *testing.T) {
 	resp := &http.Response{
 		StatusCode: 200,
 	}
-	rc := checkResponse(resp)
+	rc := checkHealthResponse(resp)
 	if rc != check.OK {
 		t.Fatalf(`Want: %v --> return value: %v`, check.OK, rc)
 	}
@@ -37,7 +37,7 @@ func TestCheckResponseCritical(t *testing.T) {
 	resp := &http.Response{
 		StatusCode: 503,
 	}
-	rc := checkResponse(resp)
+	rc := checkHealthResponse(resp)
 	if rc != check.Critical {
 		t.Fatalf(`Want: %v --> return value: %v`, check.OK, rc)
 	}

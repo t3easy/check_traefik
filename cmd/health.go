@@ -38,7 +38,7 @@ var (
 			resp := internal.GetResp(req, timeout, insecure)
 			defer resp.Body.Close()
 
-			rc := checkResponse(resp)
+			rc := checkHealthResponse(resp)
 
 			check.Exitf(
 				rc,
@@ -55,7 +55,7 @@ func init() {
 	healthCmd.PersistentFlags().StringVarP(&path, "url", "u", "/ping", "URL of the Traefik health-check endpoint")
 }
 
-func checkResponse(resp *http.Response) int {
+func checkHealthResponse(resp *http.Response) int {
 	rc := check.Critical
 	if resp.StatusCode == http.StatusOK {
 		rc = check.OK
