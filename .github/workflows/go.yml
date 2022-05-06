@@ -65,12 +65,18 @@ jobs:
       - name: Sleep for 5 seconds
         run: sleep 5s
         shell: bash
-      - name: Run version check against v2.6.3 test stack
+      - name: Run version check against v2.6.3 test stack with minVersion v2.6.3
         if: runner.os == 'Linux'
         run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.3
-      - name: Run version check against v2.6.3 test stack
+      - name: Run version check against v2.6.3 test stack with minVersion v2.6.1
         if: runner.os == 'Linux'
-        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.4 || [ $? -eq 2 ] || exit 1
+        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.1
+      - name: Run version check against v2.6.3 test stack with minVersion v2.5
+        if: runner.os == 'Linux'
+        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.5
+      - name: Run version check against v2.6.3 test stack with minVersion v2.6.4
+        if: runner.os == 'Linux'
+        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.4 || [ $? -eq 2 ] && echo Expected critical || exit 1
       - uses: actions/upload-artifact@v3
         with:
           name: Check Traefik ${{ matrix.os }}
