@@ -30,13 +30,7 @@ services:
       traefik.http.routers.ping.service: ping@internal
       traefik.http.routers.ping.tls: "true"
 
-  whoami1-1:
-    image: traefik/whoami
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.whoami1.rule: Host(`whoami1.server.tld`)
-
-  whoami1-2:
+  whoami1:
     image: traefik/whoami
     labels:
       traefik.enable: "true"

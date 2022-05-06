@@ -14,7 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Start test stack
-        run: docker-compose -f .github/workflows/compose.yml -p test-stack up -d
+        if: runner.os == 'Linux'
+        run: docker-compose -f .github/workflows/compose.yml -p test-stack up -d --scale whoami1=3
       - uses: actions/cache@v3
         if: runner.os == 'Linux'
         with:
@@ -56,6 +57,3 @@ jobs:
         with:
           name: Check Traefik ${{ matrix.os }}
           path: build/
-      - name: Stop test stack
-        if: always()
-        run: docker-compose -f .github/workflows/compose.yml -p test-stack down
