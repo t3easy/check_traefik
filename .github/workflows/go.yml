@@ -62,6 +62,9 @@ jobs:
         env:
           TRAEFIK_VERSION: v2.6.3
         run: docker-compose -f .github/workflows/compose.yml -p test-stack up -d --scale whoami1=3
+      - name: Sleep for 5 seconds
+        run: sleep 5s
+        shell: bash
       - name: Run version check against v2.6.3 test stack
         if: runner.os == 'Linux'
         run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.3
