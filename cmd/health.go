@@ -33,12 +33,18 @@ var (
 		Version: version,
 		Example: `check_traefik health -I 192.0.2.101 -H traefik.domain.tld --username monitoring --password password`,
 		Run: func(cmd *cobra.Command, args []string) {
-			req := internal.NewRequest(http.MethodHead, ip, hostname, ssl, port, path, username, password)
+			var (
+				req  *http.Request
+				resp *http.Response
+				rc   int
+			)
 
-			resp := internal.GetResp(req, timeout, insecure)
+			req = internal.NewRequest(http.MethodHead, ip, hostname, ssl, port, path, username, password)
+
+			resp = internal.GetResp(req, timeout, insecure)
 			defer resp.Body.Close()
 
-			rc := checkHealthResponse(resp)
+			rc = checkHealthResponse(resp)
 
 			check.Exitf(
 				rc,
@@ -52,11 +58,13 @@ var (
 
 func init() {
 	rootCmd.AddCommand(healthCmd)
-	healthCmd.PersistentFlags().StringVarP(&path, "url", "u", "/ping", "URL of the Traefik health-check endpoint")
+	healthCmd.PersistentFlags().StringVarP(&path, "url", "u", "/ping", "Path of the Traefik health-check endpoint")
 }
 
 func checkHealthResponse(resp *http.Response) int {
-	rc := check.Critical
+	var rc int
+
+	rc = check.Critical
 	if resp.StatusCode == http.StatusOK {
 		rc = check.OK
 	}

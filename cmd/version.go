@@ -45,9 +45,16 @@ var (
 		Short:   "Check the version of your Traefik instance",
 		Version: version,
 		Run: func(cmd *cobra.Command, args []string) {
-			req := internal.NewRequest(http.MethodGet, ip, hostname, ssl, port, path, username, password)
+			var (
+				req  *http.Request
+				resp *http.Response
+				err  error
+				b    []byte
+			)
+
+			req = internal.NewRequest(http.MethodGet, ip, hostname, ssl, port, path, username, password)
 			req.Header.Set("Accept", "application/json")
-			resp := internal.GetResp(req, timeout, insecure)
+			resp = internal.GetResp(req, timeout, insecure)
 			defer resp.Body.Close()
 			if resp.StatusCode != http.StatusOK {
 				check.Exitf(
@@ -57,12 +64,12 @@ var (
 					http.StatusText(resp.StatusCode),
 				)
 			}
-			b, err := io.ReadAll(resp.Body)
+			b, err = io.ReadAll(resp.Body)
 			if err != nil {
 				check.ExitError(err)
 			}
 
-			if err := json.Unmarshal(b, &versionInformation); err != nil {
+			if err = json.Unmarshal(b, &versionInformation); err != nil {
 				check.ExitError(err)
 			}
 
@@ -92,10 +99,12 @@ func normalizeVersion(v string) string {
 }
 
 func checkVersion(v string, minV string) {
+	var minCompare int
+
 	v = normalizeVersion(v)
 	minV = normalizeVersion(minV)
 
-	minCompare := semver.Compare(v, minV)
+	minCompare = semver.Compare(v, minV)
 
 	switch {
 	case minCompare == -1:

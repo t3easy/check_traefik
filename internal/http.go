@@ -28,8 +28,14 @@ import (
 )
 
 func NewRequest(method string, ip net.IP, hostname string, ssl bool, port int, path string, username string, password string) *http.Request {
-	var hostPort string = ""
-	schema := "http"
+	var (
+		hostPort  string = ""
+		schema    string = "http"
+		healthUrl *url.URL
+		req       *http.Request
+		err       error
+	)
+
 	if ssl {
 		schema = "https"
 		if port == 80 {
@@ -39,13 +45,13 @@ func NewRequest(method string, ip net.IP, hostname string, ssl bool, port int, p
 	if (ssl && port != 443) || (!ssl && port != 80) {
 		hostPort = ":" + strconv.Itoa(port)
 	}
-	healthUrl := &url.URL{
+	healthUrl = &url.URL{
 		Scheme: schema,
 		Host:   ip.String() + hostPort,
 		Path:   path,
 	}
 
-	req, err := http.NewRequest(method, healthUrl.String(), nil)
+	req, err = http.NewRequest(method, healthUrl.String(), nil)
 	if err != nil {
 		check.ExitError(err)
 	}
@@ -60,19 +66,26 @@ func NewRequest(method string, ip net.IP, hostname string, ssl bool, port int, p
 }
 
 func GetResp(req *http.Request, timeout time.Duration, insecure bool) *http.Response {
-	tr := &http.Transport{
+	var (
+		tr     *http.Transport
+		client *http.Client
+		resp   *http.Response
+		err    error
+	)
+
+	tr = &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: insecure,
 			ServerName:         req.Host,
 		},
 	}
 
-	client := &http.Client{
+	client = &http.Client{
 		Timeout:   timeout * time.Second,
 		Transport: tr,
 	}
 
-	resp, err := client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
 		check.ExitError(err)
 	}

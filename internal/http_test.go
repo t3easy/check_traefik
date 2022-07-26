@@ -23,9 +23,13 @@ import (
 )
 
 func TestNewRequest(t *testing.T) {
-	hostname := "localhost"
-	url := "http://127.0.0.1:8080/ping"
-	req := NewRequest(http.MethodHead, net.ParseIP("127.0.0.1"), hostname, false, 8080, "ping", "user", "password")
+	var (
+		hostname string = "localhost"
+		url      string = "http://127.0.0.1:8080/ping"
+		req      *http.Request
+	)
+
+	req = NewRequest(http.MethodHead, net.ParseIP("127.0.0.1"), hostname, false, 8080, "ping", "user", "password")
 	if req.Host != hostname {
 		t.Fatalf(`Want: %v --> return value: %v`, hostname, req.Host)
 	}

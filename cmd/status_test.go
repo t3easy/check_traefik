@@ -27,8 +27,12 @@ const (
 )
 
 func TestOverviewStruct(t *testing.T) {
-	var overview TraefikOverview
-	if err := json.Unmarshal([]byte(apiOverviewReturn), &overview); err != nil {
+	var (
+		overview TraefikOverview
+		err      error
+	)
+
+	if err = json.Unmarshal([]byte(apiOverviewReturn), &overview); err != nil {
 		t.Fatalf("Unmarshal: %v", err)
 	}
 	if overview.Http.Routers.Total != 7 {

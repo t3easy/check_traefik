@@ -26,8 +26,12 @@ const (
 )
 
 func TestVersionStruct(t *testing.T) {
-	var version Version
-	if err := json.Unmarshal([]byte(apiVersionReturn), &version); err != nil {
+	var (
+		version Version
+		err     error
+	)
+
+	if err = json.Unmarshal([]byte(apiVersionReturn), &version); err != nil {
 		t.Fatalf("Unmarshal: %v", err)
 	}
 	if version.Version != "2.6.3" {
