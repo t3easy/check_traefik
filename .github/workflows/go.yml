@@ -30,11 +30,13 @@ jobs:
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
           BINARY=check_traefik_$(go env GOOS)_$(go env GOARCH)
+          echo "BINARY=$BINARY" >> $GITHUB_ENV
           go build -ldflags "-s -w" -o build/$BINARY
       - name: Build binary Windows
         if: runner.os == 'Windows'
         run: |
           $env:BINARY = "check_traefik_$(go env GOOS)_$(go env GOARCH).exe"
+          echo "BINARY=$env:BINARY" | Out-File -FilePath $env:GITHUB_ENV -Append
           go build -ldflags "-s -w" -o build/$env:BINARY
       - name: Run health check against test stack
         if: runner.os == 'Linux'
