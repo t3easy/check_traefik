@@ -50,13 +50,13 @@ jobs:
       - name: Test
         run: go test -v ./...
       - name: Build binary
-        run: go build -ldflags "-s -w" -o build/
+        run: go build -ldflags "-s -w" -o build/check_traefik_${GOHOSTOS}_${GOHOSTARCH}
       - name: Run health check against test stack
         if: runner.os == 'Linux'
-        run: ./build/check_traefik health -I 127.0.0.1 -H traefik.server.tld --url /monitoring/ping --username monitoring --password password --ssl --insecure
+        run: ./build/check_traefik_${GOHOSTOS}_${GOHOSTARCH} health -I 127.0.0.1 -H traefik.server.tld --url /monitoring/ping --username monitoring --password password --ssl --insecure
       - name: Run version check against test stack
         if: runner.os == 'Linux'
-        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.6
+        run: ./build/check_traefik_${GOHOSTOS}_${GOHOSTARCH} version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.6
       - name: Start test stack with Traefik v2.6.3
         if: runner.os == 'Linux'
         env:
@@ -67,16 +67,16 @@ jobs:
         shell: bash
       - name: Run version check against v2.6.3 test stack with minVersion v2.6.3
         if: runner.os == 'Linux'
-        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.3
+        run: ./build/check_traefik_${GOHOSTOS}_${GOHOSTARCH} version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.3
       - name: Run version check against v2.6.3 test stack with minVersion v2.6.1
         if: runner.os == 'Linux'
-        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.1
+        run: ./build/check_traefik_${GOHOSTOS}_${GOHOSTARCH} version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.1
       - name: Run version check against v2.6.3 test stack with minVersion v2.5
         if: runner.os == 'Linux'
-        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.5
+        run: ./build/check_traefik_${GOHOSTOS}_${GOHOSTARCH} version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.5
       - name: Run version check against v2.6.3 test stack with minVersion v2.6.4
         if: runner.os == 'Linux'
-        run: ./build/check_traefik version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.4 || [ $? -eq 2 ] && echo Expected critical || exit 1
+        run: ./build/check_traefik_${GOHOSTOS}_${GOHOSTARCH} version -I 127.0.0.1 -H traefik.server.tld --url /monitoring/api/version --username monitoring --password password --ssl --insecure --minVersion v2.6.4 || [ $? -eq 2 ] && echo Expected critical || exit 1
       - uses: actions/upload-artifact@v3
         with:
           name: Check Traefik ${{ matrix.os }}
